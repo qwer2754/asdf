@@ -16,17 +16,27 @@ sentences = [
 # Streamlit 앱 타이틀
 st.title("한국어 타자 연습 (Streamlit 버전)")
 
-# 문장 랜덤 선택
+# 초기화 버튼
+if st.button("다시 시작"):
+    st.session_state.target = random.choice(sentences)
+    st.session_state.start_time = None
+    st.session_state.user_input = ""
+    st.experimental_rerun()  # 앱 초기화
+
+# 초기 상태 설정
 if "target" not in st.session_state:
     st.session_state.target = random.choice(sentences)
 if "start_time" not in st.session_state:
     st.session_state.start_time = None
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 
 st.subheader("아래 문장을 입력하세요:")
 st.write(st.session_state.target)
 
 # 사용자 입력
-user_input = st.text_input("입력:")
+user_input = st.text_input("입력:", value=st.session_state.user_input)
+st.session_state.user_input = user_input  # 세션에 저장
 
 # 타자 시작 시간 기록
 if st.session_state.start_time is None and user_input != "":
@@ -71,6 +81,7 @@ if st.button("제출"):
         st.markdown("**📌 오타 강조 결과:**")
         st.markdown(highlighted_text, unsafe_allow_html=True)
 
-        # 다음 라운드를 위해 초기화
+        # 다음 라운드 준비 (원하면 자동으로 새로운 문장 선택 가능)
         st.session_state.target = random.choice(sentences)
         st.session_state.start_time = None
+        st.session_state.user_input = ""
